@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" action="{{ url_for('.v_init') }}">
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            <h1 class="panel-title">Confirm init</h1>
+        </div>
+        <div class="panel-body">
+            <p>Please press &lt;Confirm init&gt; to confirm the re-initialisation of the PrisonersCompare table.</p>
+            <p>Warning! This will take forever, depending on how good your system is.</p>
+            {{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.submit(class_='btn btn-danger') }}
+            </div>
+        </div>
+    </div>
+    </form>
+{% endblock %}

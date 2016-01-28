@@ -1,0 +1,22 @@
+{
+  "name": "Doctoraat Ewout",
+  "authors": [
+    "Pieter De Praetere <pieter.de.praetere@helptux.be>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "GPLv2",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6"
+  }
+}

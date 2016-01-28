@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+    <div class="col-sm-offset-8 col-sm-4">
+        <a href="{{ url_for('.v_match_compare', prisoner_id=prisoner_id) }}" class="btn btn-default">Start</a>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-sm-4 col-sm-offset-4">
+        <h1>Nog te doen</h1>
+    </div>
+    </div>
+    <div class="row">
+    <table class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Voornaam</th>
+        <th>Naam</th>
+        <th>Geboorteplaats</th>
+        <th>Geboortedatum</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for prisoner in unmatched_prisoners %}
+        <tr>
+        <td>{{ prisoner.id_gedetineerde }}</td>
+        <td>{{ prisoner.Voornaam }}</td>
+        <td>{{ prisoner.Naam }}</td>
+        <td>{{ prisoner.Geboorteplaats }}</td>
+        <td>{{ prisoner.Geboortedag }}&ndash;{{ prisoner.Geboortemaand }}&ndash;{{ prisoner.Geboortejaar }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+{% endblock %}

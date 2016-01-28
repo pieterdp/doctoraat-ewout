@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if title %}
+        <title>{{ title }}</title>
+    {% else %}
+        <title>Helptux</title>
+    {% endif %}
+    <!-- CSS -->
+    <!-- Bootstrap -->
+    <link href="{{ url_for('static', filename='js/bower_components/bootstrap/dist/css/bootstrap.css') }}"
+          rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='js/bower_components/bootstrap/dist/css/bootstrap-theme.css') }}"
+          rel="stylesheet"/>
+    <!-- Helptux -->
+    <link href="{{ url_for('static', filename='css/bootstrap-dashboard.css') }}" rel="stylesheet"/>
+    {% block helptux_css %}
+    {% endblock %}
+    <!-- Javascript -->
+    <!-- Bootstrap -->
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='js/bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script>window.jQuery || document.write('<script src="{{ url_for('static', filename='js/bower_components/jquery/dist/jquery.js') }}"><\/script>')</script>
+    <script type="application/javascript"
+            src="{{ url_for('static', filename='js/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    {% block helptux_js %}
+    {% endblock %}
+</head>
+<body>
+{% include 'navigation.html' %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="dropdown-header">Prisoner matching</li>
+                <li class=""><a href="{{ url_for('.v_init') }}">Init</a></li>
+                <li class=""><a href="{{ url_for('.v_match_list') }}">Match list</a></li>
+                <li class=""><a href="#">Export</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% if get_flashed_messages() %}
+                <!-- Messages -->
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-info" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" action="{{ url_for('.v_match_compare', prisoner_id=prisoner_id) }}">
+    <div class="form-group">
+        <label>Match voor {{ prisoner_string }}</label>
+        {{ form.matches(class_='form-control') }}
+    </div>
+        {{ form.matches.errors }}
+        {{ form.errors }}
+    {{ form.csrf_token }}
+    {{ form.submit(class_='btn btn-default') }}
+    </form>
+{% endblock %}

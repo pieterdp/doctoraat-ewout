@@ -2,12 +2,21 @@
 {% block content %}
     <form method="post" action="{{ url_for('.v_match_compare', prisoner_id=prisoner_id) }}">
     <div class="form-group">
-        <label>Match voor {{ prisoner_string }}</label>
-        {{ form.matches(class_='form-control') }}
-    </div>
-        {{ form.matches.errors }}
-        {{ form.errors }}
+        <label><h2>Match voor {{ prisoner_string }}</h2></label>
+        </div>
+        <div>
+            {{ form.matches }}
+        </div>
+        {% if form.matches.errors %}
+            {% for error in form.matches.errors %}
+                <div class="alert-warning">
+                {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
     {{ form.csrf_token }}
-    {{ form.submit(class_='btn btn-default') }}
+    <div class="form-group">
+        {{ form.submit(class_='btn btn-default') }}
+    </div>
     </form>
 {% endblock %}

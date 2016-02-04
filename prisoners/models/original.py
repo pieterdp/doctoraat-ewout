@@ -12,7 +12,7 @@ class Archiefbestanden(db.Model):
     Afdeling = db.Column(db.String(255), nullable=True)
     Opmerkingen = db.Column(db.String(255), nullable=True)
     Uitgebreide_beschrijving = db.Column(db.String(512), nullable=True)
-    Verblijf = db.relationship('Verblijf', backref='Archief', lazy='dynamic')
+#    Verblijf = db.relationship('Verblijf', backref='Archief', lazy='dynamic')
 
 
 class Gedetineerde(db.Model):
@@ -27,6 +27,7 @@ class Gedetineerde(db.Model):
     Geboortejaar = db.Column(db.Integer, nullable=True, index=True)
     Opmerkingen = db.Column(db.String(512), nullable=True)
     Verblijf = db.relationship('Verblijf', backref='Gedetineerde', lazy='dynamic')
+    c_prisoner = db.relationship('PrisonersCompare', backref='Gedetineerde', lazy='dynamic')
 
 
 class Verblijf(db.Model):
@@ -34,7 +35,7 @@ class Verblijf(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Id_verblijf = db.Column(db.Integer, index=True)
     Id_ged = db.Column(db.Integer, db.ForeignKey(Gedetineerde.Id_gedetineerde))
-    Id_archief = db.Column(db.Integer, db.ForeignKey(Archiefbestanden.Id_archief))
+#    Id_archief = db.Column(db.Integer, db.ForeignKey(Archiefbestanden.Id_archief))
     Rolnummer = db.Column(db.String(64), index=True)
     Inschrijvingsdatum_d = db.Column(db.Integer, index=True, nullable=True)
     Inschrijvingsdatum_m = db.Column(db.Integer, index=True, nullable=True)

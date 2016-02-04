@@ -18,7 +18,7 @@
         <th>Voornaam</th>
         <th>Naam</th>
         <th>Geboorteplaats</th>
-        <th>Geboortedatum</th>
+        <th>Geboortejaar (geschat)</th>
     </tr>
     </thead>
     <tbody>
@@ -28,7 +28,7 @@
         <td>{{ prisoner.Voornaam }}</td>
         <td>{{ prisoner.Naam }}</td>
         <td>{{ prisoner.Geboorteplaats }}</td>
-        <td>{{ prisoner.Geboortedag }}&ndash;{{ prisoner.Geboortemaand }}&ndash;{{ prisoner.Geboortejaar }}</td>
+        <td>{{ prisoner.Geboortejaar }}</td>
         </tr>
     {% endfor %}
     </tbody>

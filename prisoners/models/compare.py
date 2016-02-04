@@ -6,7 +6,7 @@ from prisoners.models.original import Gedetineerde
 
 prisonersmatch = db.Table('PrisonersMatch',
                           db.Column('master_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.id_gedetineerde')),
-                          db.Column('slave_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.id_gedetineerde'))
+                          db.Column('slave_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.c_id_gedetineerde'))
                           )
 
 
@@ -14,25 +14,25 @@ class PrisonersCompare(db.Model):
     __tablename__ = 'PrisonersCompare'
     id = db.Column(db.Integer, primary_key=True)
     id_gedetineerde = db.Column(db.Integer, db.ForeignKey(Gedetineerde.Id_gedetineerde))
-    Voornaam = db.Column(db.Text, nullable=False, index=True)
-    Naam = db.Column(db.Text, nullable=False, index=True)
+    Voornaam = db.Column(db.String(255), nullable=False, index=True)
+    Naam = db.Column(db.String(255), nullable=False, index=True)
     Geboortejaar = db.Column(db.Integer, index=True)
     Geboortemaand = db.Column(db.Integer, index=True)
     Geboortedag = db.Column(db.Integer, index=True)
-    Geboorteplaats = db.Column(db.Integer, index=True, nullable=False)
+    Geboorteplaats = db.Column(db.String(255), index=True, nullable=False)
     c_id_gedetineerde = db.Column(db.Integer, db.ForeignKey(Gedetineerde.Id_gedetineerde))
-    c_voornaam = db.Column(db.Text, nullable=False, index=True)
-    c_naam = db.Column(db.Text, nullable=False, index=True)
+    c_voornaam = db.Column(db.String(255), nullable=False, index=True)
+    c_naam = db.Column(db.String(255), nullable=False, index=True)
     c_geboortejaar = db.Column(db.Integer, index=True)
     c_geboortemaand = db.Column(db.Integer, index=True)
     c_geboortedag = db.Column(db.Integer, index=True)
-    c_geboorteplaats = db.Column(db.Integer, index=True, nullable=False)
+    c_geboorteplaats = db.Column(db.String(255), index=True, nullable=False)
     has_been_checked = db.Column(db.Boolean, nullable=False, default=False)
-    l_score = db.Column(db.Numeric, index=True)
+    l_score = db.Column(db.Numeric(10,9), index=True)
     matches = db.relationship('PrisonersCompare',
                               secondary=prisonersmatch,
                               primaryjoin=(prisonersmatch.c.master_id_ged == id_gedetineerde),
-                              secondaryjoin=(prisonersmatch.c.slave_id_ged == id_gedetineerde),
+                              secondaryjoin=(prisonersmatch.c.slave_id_ged == c_id_gedetineerde),
                               backref=db.backref('match_master', lazy='dynamic'),
                               lazy='dynamic'
                               )

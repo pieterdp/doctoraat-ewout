@@ -19,3 +19,5 @@ class PrisonersMerged(db.Model):
     geboortejaar = db.Column(db.String(255))
     lichaamslengte = db.Column(db.String(255))
     flag = db.Column(db.Boolean, default=False)
+    control_leeftijd = db.Column(db.String(255))
+    control_lichaamslengte = db.Column(db.String(255))

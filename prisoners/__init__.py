@@ -6,6 +6,8 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
+DEBUG = False
+
 from prisoners.views.forms import InitForm, MatchForm
 from prisoners.modules.matcher import Matcher
 from prisoners.models.compare import PrisonersCompare
@@ -56,6 +58,9 @@ def v_match_compare(prisoner_id):
                                                           PrisonersCompare.id_gedetineerde == prisoner_id,
                                                           PrisonersCompare.l_score > 0.5)) \
         .order_by(PrisonersCompare.l_score.desc()).all()
+    if not current_prisoner:
+        new_prisoner_id = prisoner_id + 1
+        return redirect(url_for('.v_match_compare', prisoner_id=new_prisoner_id))
     if len(possible_matches) > 0:
         matches_choices = []
         for possible_match in possible_matches:
@@ -66,13 +71,23 @@ def v_match_compare(prisoner_id):
         form.matches.choices = matches_choices
     else:
         flash('Geen matches voor deze gevangene.')
+        current_prisoner.has_been_checked = True
+        for prisoner in PrisonersCompare.query.filter(PrisonersCompare.id_gedetineerde == prisoner_id).all():
+            # All prisoners with this id - do this for all prisoners with this id, matches or not
+            prisoner.has_been_checked = True
+            db.session.commit()
         new_prisoner_id = prisoner_id + 1
         return redirect(url_for('.v_match_compare', prisoner_id=new_prisoner_id))
     if request.method == 'POST' and form.validate_on_submit():
+        for prisoner in PrisonersCompare.query.filter(PrisonersCompare.id_gedetineerde == prisoner_id).all():
+            # All prisoners with this id - do this for all prisoners with this id, matches or not
+            prisoner.has_been_checked = True
+            db.session.commit()
         selected_matches = form.matches.data
         # selected_matches = array met c_id_gedetineerde van matches
         # naar volgende
         current_prisoner.has_been_checked = True
+        db.session.commit()
         for selected_match in selected_matches:
             # Hier nog fouten
             s_prisoner = PrisonersCompare.query.filter(and_(PrisonersCompare.c_id_gedetineerde == selected_match,
@@ -81,24 +96,21 @@ def v_match_compare(prisoner_id):
             db.session.commit()
             # Add has_been_checked to all PrisonersCompare for which PrisonersCompare.id_gedetineerde OR
             # c_id_gedetineerde = selected_match or prisoner_id
-            for prisoner in PrisonersCompare.query.filter(PrisonersCompare.id_gedetineerde == prisoner_id).all():
-                # All prisoners with this id
-                prisoner.has_been_checked = True
-                db.session.commit()
             for prisoner in PrisonersCompare.query.filter(PrisonersCompare.id_gedetineerde == selected_match).all():
                 # All prisoners with the id of the match
                 prisoner.has_been_checked = True
                 db.session.commit()
-            for prisoner in PrisonersCompare.query.filter(and_(PrisonersCompare.c_id_gedetineerde == selected_match,
-                                                               PrisonersCompare.l_score > 0.5)).all():
-                # All prisoners that are compared to this match
-                prisoner.has_been_checked = True
-                db.session.commit()
-            for prisoner in PrisonersCompare.query.filter(and_(PrisonersCompare.c_id_gedetineerde == prisoner_id,
-                                                               PrisonersCompare.l_score > 0.5)).all():
-                # All prisoners that are compared to this prisoner
-                prisoner.has_been_checked = True
-                db.session.commit()
+            if DEBUG is True:
+                for prisoner in PrisonersCompare.query.filter(and_(PrisonersCompare.c_id_gedetineerde == selected_match,
+                                                                   PrisonersCompare.l_score > 0.5)).all():
+                    # All prisoners that are compared to this match
+                    prisoner.has_been_checked = True
+                    db.session.commit()
+                for prisoner in PrisonersCompare.query.filter(and_(PrisonersCompare.c_id_gedetineerde == prisoner_id,
+                                                                   PrisonersCompare.l_score > 0.5)).all():
+                    # All prisoners that are compared to this prisoner
+                    prisoner.has_been_checked = True
+                    db.session.commit()
         flash('Gevangene gematched.')
         new_prisoner_id = prisoner_id + 1
         return redirect(url_for('.v_match_compare', prisoner_id=new_prisoner_id))
@@ -109,6 +121,7 @@ def v_match_compare(prisoner_id):
         prisoner_string = '{0} {1} ({2})'.format(current_prisoner.Voornaam, current_prisoner.Naam,
                                                  current_prisoner.Geboortejaar)
         return render_template('admin/match.html', form=form, prisoner_id=prisoner_id, prisoner_string=prisoner_string)
+
 ##
 # To create the definitive table, go back to Gedetineerde; we use Id_gedetineerde and PrisonersCompare does not have
 # all the gedetineerden: only those that can be matched!

@@ -16,7 +16,9 @@ class Matcher:
 
     def __init__(self):
         prisoners = Gedetineerde.query.all()
+        i = 0
         for prisoner in prisoners:
+            i += 1
             try:
                 same_birth_place = self.get_same_place_of_birth(prisoner)
             except AttributeError as e:
@@ -25,7 +27,7 @@ class Matcher:
             year_of_birth = self.make_year_of_birth(prisoner)
             in_pc = PrisonersCompare.query.filter(PrisonersCompare.id_gedetineerde == prisoner.Id_gedetineerde).first()
             if not in_pc:
-                print('Matching {0}.'.format(prisoner))
+                print('Item #{0}: matching {1}.'.format(i, prisoner.Id_gedetineerde))
                 for pr_same_birth in same_birth_place:
                     # Try to reduce the pool of candidates by only selecting prisoners for which the difference
                     # between their years of births is less than 5
@@ -51,7 +53,7 @@ class Matcher:
                                 print(e)
                                 continue
             else:
-                print('{0} already in database.'.format(prisoner))
+                print('Item #{0}: {1} already in database.'.format(i, prisoner.Id_gedetineerde))
 
     def check(self, id_master, id_slave):
         exists = PrisonersCompare.query.filter(and_(PrisonersCompare.id_gedetineerde == id_master,

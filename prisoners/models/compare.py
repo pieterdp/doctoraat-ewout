@@ -4,10 +4,17 @@ from prisoners import db
 from prisoners.models.original import Gedetineerde
 
 
-prisonersmatch = db.Table('PrisonersMatch',
-                          db.Column('master_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.id_gedetineerde')),
-                          db.Column('slave_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.c_id_gedetineerde'))
-                          )
+#prisonersmatch = db.Table('PrisonersMatch',
+#                          db.Column('master_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.id_gedetineerde')),
+#                          db.Column('slave_id_ged', db.Integer, db.ForeignKey('PrisonersCompare.c_id_gedetineerde'))
+#                          )
+
+
+class PrisonersMatch(db.Model):
+    __tablename__ = 'PrisonersMatch'
+    id = db.Column(db.Integer, primary_key=True)
+    master_id_ged = db.Column(db.Integer, db.ForeignKey('PrisonersCompare.id_gedetineerde'))
+    slave_id_ged = db.Column(db.Integer, db.ForeignKey('PrisonersCompare.c_id_gedetineerde'))
 
 
 class PrisonersCompare(db.Model):
@@ -20,7 +27,7 @@ class PrisonersCompare(db.Model):
     Geboortemaand = db.Column(db.Integer, index=True)
     Geboortedag = db.Column(db.Integer, index=True)
     Geboorteplaats = db.Column(db.String(255), index=True, nullable=False)
-    c_id_gedetineerde = db.Column(db.Integer, db.ForeignKey(Gedetineerde.Id_gedetineerde))
+    c_id_gedetineerde = db.Column(db.Integer, index=True)
     c_voornaam = db.Column(db.String(255), nullable=False, index=True)
     c_naam = db.Column(db.String(255), nullable=False, index=True)
     c_geboortejaar = db.Column(db.Integer, index=True)
@@ -30,9 +37,9 @@ class PrisonersCompare(db.Model):
     has_been_checked = db.Column(db.Boolean, nullable=False, default=False)
     l_score = db.Column(db.Numeric(10,9), index=True)
     matches = db.relationship('PrisonersCompare',
-                              secondary=prisonersmatch,
-                              primaryjoin=(prisonersmatch.c.master_id_ged == id_gedetineerde),
-                              secondaryjoin=(prisonersmatch.c.slave_id_ged == c_id_gedetineerde),
+                              secondary=PrisonersMatch.__table__,
+                              primaryjoin=(PrisonersMatch.master_id_ged == id_gedetineerde),
+                              secondaryjoin=(PrisonersMatch.slave_id_ged == c_id_gedetineerde),
                               backref=db.backref('match_master', lazy='dynamic'),
                               lazy='dynamic'
                               )

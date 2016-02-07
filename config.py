@@ -2,14 +2,14 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = True
+DEBUG = False
 
 ##
 # Database settings
 ##
-DB_HOST = 'localhost'
-DB_NAME = 'scoremodel'
-DB_USER = 'scoremodel'
+DB_HOST = 'serapeum'
+DB_NAME = 'e_prisoners'
+DB_USER = 's_prisoners'
 DB_PASS = 'Kpg70PHzdbhOmXIkaTxNOSkCO7JFhlyPQ1jXyJITo2YX1QJH9lfjL9l86X1M0DW'
 
 ##
@@ -33,3 +33,4 @@ if DEBUG is True:
 else:
     SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{passw}@{host}/{db}'.format(user=DB_USER, passw=DB_PASS,
                                                                           host=DB_HOST, db=DB_NAME)
+    SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')

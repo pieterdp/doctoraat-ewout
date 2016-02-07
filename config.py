@@ -31,6 +31,6 @@ if DEBUG is True:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 else:
-    SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{passw}@{host}/{db}'.format(user=DB_USER, passw=DB_PASS,
-                                                                          host=DB_HOST, db=DB_NAME)
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{passw}@{host}/{db}'.format(user=DB_USER, passw=DB_PASS,
+                                                                                  host=DB_HOST, db=DB_NAME)
     SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')

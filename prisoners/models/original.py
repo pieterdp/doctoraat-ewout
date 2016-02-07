@@ -27,6 +27,7 @@ class Gedetineerde(db.Model):
     Geboortejaar = db.Column(db.Integer, nullable=True, index=True)
     Opmerkingen = db.Column(db.String(512), nullable=True)
     Verblijf = db.relationship('Verblijf', backref='Gedetineerde', lazy='dynamic')
+    c_prisoner = db.relationship('PrisonersCompare', backref='Gedetineerde', lazy='dynamic')
 
 
 class Verblijf(db.Model):

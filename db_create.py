@@ -5,6 +5,7 @@ import prisoners
 
 from prisoners.models.compare import prisonersmatch, PrisonersCompare
 from prisoners.models.original import *
+from prisoners.models.merge import *
 
 ##
 # TODO: Update for MySQL

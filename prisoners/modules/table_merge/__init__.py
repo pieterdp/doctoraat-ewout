@@ -133,15 +133,15 @@ class TableMerge:
     def make_control_leeftijd(self, oc_prisoner):
         control_list = []
         for match in oc_prisoner.matches:
-            control_list.append(match.Gedetineerde.Verblijf.first().Leeftijd)
-        control_list.append(oc_prisoner.Gedetineerde.Verblijf.first().Leeftijd)
+            control_list.append(str(match.Gedetineerde.Verblijf.first().Leeftijd))
+        control_list.append(str(oc_prisoner.Gedetineerde.Verblijf.first().Leeftijd))
         return ';'.join(control_list)
 
     def make_control_lichaamslengte(self, oc_prisoner):
         control_list = []
         for match in oc_prisoner.matches:
-            control_list.append(match.Gedetineerde.Verblijf.first().Lichaamslengte_m)
-        control_list.append(oc_prisoner.Gedetineerde.Verblijf.first().Lichaamslengte_m)
+            control_list.append(str(match.Gedetineerde.Verblijf.first().Lichaamslengte_m))
+        control_list.append(str(oc_prisoner.Gedetineerde.Verblijf.first().Lichaamslengte_m))
         return ';'.join(control_list)
 
     def get_occupation_closest_to(self, o_c_prisoner, to_age):

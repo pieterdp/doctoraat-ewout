@@ -22,14 +22,15 @@ def v_index():
 
 @app.route('/init/', methods=['GET', 'POST'])
 def v_init():
-    form = InitForm()
-    if request.method == 'POST' and form.validate_on_submit():
-        # Remove all items in the PrisonersCompare table
-        PrisonersCompare.query.delete()
-        m = Matcher()
-        flash('Table re-initialised.')
-        return redirect(url_for('.v_init'))
-    return render_template('admin/init.html', form=form)
+    return redirect(url_for('.v_match_list'))
+    #form = InitForm()
+    #if request.method == 'POST' and form.validate_on_submit():
+    #    # Remove all items in the PrisonersCompare table
+    #    PrisonersCompare.query.delete()
+    #    m = Matcher()
+    #    flash('Table re-initialised.')
+    #    return redirect(url_for('.v_init'))
+    #return render_template('admin/init.html', form=form)
 
 
 @app.route('/match/list/')

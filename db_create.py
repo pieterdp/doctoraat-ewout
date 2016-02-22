@@ -3,8 +3,6 @@ from os.path import exists
 from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO
 import prisoners
 
-from prisoners.models.compare import prisonersmatch, PrisonersCompare
-from prisoners.models.original import *
 from prisoners.models.merge import *
 
 ##

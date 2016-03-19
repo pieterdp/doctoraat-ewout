@@ -1,11 +1,3 @@
-from prisoners.modules.matcher import Matcher
-from prisoners.models.compare import PrisonersCompare
+from prisoners.models.brugge import *
 
-
-print('Emptying old table')
-
-print('Done')
-
-print('Creating PrisonersCompare')
-m = Matcher()
-print('Done')
+db.create_all()

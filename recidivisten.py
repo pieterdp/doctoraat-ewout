@@ -3,7 +3,7 @@ from prisoners.modules.recidive.get import RecidiveGet
 from prisoners.modules.recidive.out import RecidiveOut, GenericOut
 from prisoners.modules.all import All
 
-param = 'GET_BELOW_21'
+param = 'GET_BELOW_21_COUPLE'
 
 rg = RecidiveGet()
 

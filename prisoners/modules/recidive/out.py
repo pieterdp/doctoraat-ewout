@@ -145,12 +145,13 @@ class GenericOut:
         for data_item in data_list:
             row = [data_item[0][0]['id_ged']]
             for data_couple in data_item:
-                row.append('{0}:{1}|{2}:{3}'.format(
-                    data_couple[0]['leeftijd'],
-                    data_couple[0]['lengte'],
-                    data_couple[1]['leeftijd'],
-                    data_couple[1]['lengte']
-                ))
+                if len(data_couple) > 1:
+                    row.append('{0}:{1}|{2}:{3}'.format(
+                        data_couple[0]['leeftijd'],
+                        data_couple[0]['lengte'],
+                        data_couple[1]['leeftijd'],
+                        data_couple[1]['lengte']
+                    ))
             rows.append(row)
         return rows
 

@@ -128,20 +128,20 @@ class RecidiveGet:
             coupled_row = []
             # Sort the row based on the ''.join(inschrijvingdatum)
             sorted_row = sorted(row, key=lambda item: self.mk_sortable_date(item['inschrijving']))
-            if len(sorted_row) >= 2:
-                i = 0
-                while i < len(sorted_row):
-                    try:
-                        next_item = sorted_row[i + 1]
-                    except IndexError:
-                        # We're at the last item, so break
-                        if len(coupled_row) == 0:
-                            coupled_row = [[sorted_row[i]]]
-                        break
-                    else:
-                        coupled_row.append([sorted_row[i], sorted_row[i+1]])
-                    i += 1
-                below_coupled.append(coupled_row)
+            #if len(sorted_row) >= 2:
+            i = 0
+            while i < len(sorted_row):
+                try:
+                    next_item = sorted_row[i + 1]
+                except IndexError:
+                    # We're at the last item, so break
+                    if len(coupled_row) == 0:
+                        coupled_row = [[sorted_row[i]]]
+                    break
+                else:
+                    coupled_row.append([sorted_row[i], sorted_row[i+1]])
+                i += 1
+            below_coupled.append(coupled_row)
         return below_coupled
 
     def mk_sortable_date(self, inschrijvingsdatum):

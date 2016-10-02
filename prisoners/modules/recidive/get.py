@@ -105,18 +105,55 @@ class RecidiveGet:
                 person_data_points.append({
                     'id_ged': r['master_id'],
                     'leeftijd': r['master_leeftijd'],
-                    'lengte': r['master_lengte']
+                    'lengte': r['master_lengte'],
+                    'inschrijving': [r['master_inschrijvingsjaar'], r['master_inschrijvingsmaand'], r['master_inschrijvingsdag']]
                 })
             for s in r['slaves']:
                 if s['slave_leeftijd'] is not None and s['slave_leeftijd'] <= 21:
                     person_data_points.append({
                         'id_ged': s['slave_id'],
                         'leeftijd': s['slave_leeftijd'],
-                        'lengte': s['slave_lengte']
+                        'lengte': s['slave_lengte'],
+                        'inschrijving': [s['slave_inschrijvingsjaar'], s['slave_inschrijvingsmaand'],
+                                         s['slave_inschrijvingsdag']]
                     })
-            if len(person_data_points) >= 2:
+            if len(person_data_points) > 0:
                 below_21.append(person_data_points)
         return below_21
+
+    def get_coupled_data_below_21(self):
+        below_21 = self.get_all_recidivists_below_21()
+        below_coupled = []
+        for row in below_21:
+            coupled_row = []
+            # Sort the row based on the ''.join(inschrijvingdatum)
+            sorted_row = sorted(row, key=lambda item: self.mk_sortable_date(item['inschrijving']))
+            if len(sorted_row) >= 2:
+                i = 0
+                while i < len(sorted_row):
+                    try:
+                        next_item = sorted_row[i + 1]
+                    except IndexError:
+                        # We're at the last item, so break
+                        if len(coupled_row) == 0:
+                            coupled_row = [[sorted_row[i]]]
+                        break
+                    else:
+                        coupled_row.append([sorted_row[i], sorted_row[i+1]])
+                    i += 1
+                below_coupled.append(coupled_row)
+        return below_coupled
+
+    def mk_sortable_date(self, inschrijvingsdatum):
+        j = inschrijvingsdatum[0]
+        m = inschrijvingsdatum[1]
+        d = inschrijvingsdatum[2]
+        if len(str(m)) < 2:
+            m = '0{0}'.format(m)
+        if len(str(d)) < 2:
+            d = '0{0}'.format(d)
+        as_str = ''.join([str(j), str(m), str(d)])
+        return int(as_str)
 
     def get_all_recidivists_above_eq_21(self):
         recidivists = self.__r_cache()
@@ -149,6 +186,8 @@ class RecidiveGet:
         return {
             'slave_id': slave_id,
             'slave_inschrijvingsjaar': additional_info['inschrijvingsjaar'],
+            'slave_inschrijvingsmaand': additional_info['inschrijvingsmaand'],
+            'slave_inschrijvingsdag': additional_info['inschrijvingsdag'],
             'slave_geslacht': db_gedetineerde.Geslacht,
             'slave_leeftijd': additional_info['leeftijd'],
             'slave_lengte': additional_info['lengte']
@@ -163,6 +202,8 @@ class RecidiveGet:
         return {
             'slave_id': slave_id,
             'slave_inschrijvingsjaar': additional_info['inschrijvingsjaar'],
+            'slave_inschrijvingsmaand': additional_info['inschrijvingsmaand'],
+            'slave_inschrijvingsdag': additional_info['inschrijvingsdag'],
             'slave_geslacht': db_gedetineerde.Geslacht,
             'slave_leeftijd': additional_info['leeftijd'],
             'slave_lengte': additional_info['lengte']
@@ -181,6 +222,8 @@ class RecidiveGet:
             'master_voornaam': db_gedetineerde.Voornaam,
             'master_geboorteplaats': additional_info['geboorteplaats'],
             'master_inschrijvingsjaar': additional_info['inschrijvingsjaar'],
+            'master_inschrijvingsmaand': additional_info['inschrijvingsmaand'],
+            'master_inschrijvingsdag': additional_info['inschrijvingsdag'],
             'master_geslacht': db_gedetineerde.Geslacht,
             'master_leeftijd': additional_info['leeftijd'],
             'master_lengte': additional_info['lengte']
@@ -198,6 +241,8 @@ class RecidiveGet:
             'master_voornaam': db_gedetineerde.Voornaam,
             'master_geboorteplaats': additional_info['geboorteplaats'],
             'master_inschrijvingsjaar': additional_info['inschrijvingsjaar'],
+            'master_inschrijvingsmaand': additional_info['inschrijvingsmaand'],
+            'master_inschrijvingsdag': additional_info['inschrijvingsdag'],
             'master_geslacht': db_gedetineerde.Geslacht,
             'master_leeftijd': additional_info['leeftijd'],
             'master_lengte': additional_info['lengte']
@@ -210,8 +255,10 @@ class RecidiveGet:
             return {
                 'geboorteplaats': '',
                 'inschrijvingsjaar': 0,
+                'inschrijvingsmaand': 0,
+                'inschrijvingsdag': 0,
                 'leeftijd': 0,
-                'lengte': 0
+                'lengte': 'ERROR_NO_LENGTH'
             }
         db_geboorteplaats = db_verblijf.Geboorteplaats.first()
         if not db_geboorteplaats:
@@ -219,12 +266,16 @@ class RecidiveGet:
             return {
                 'geboorteplaats': '',
                 'inschrijvingsjaar': db_verblijf.Inschrijvingsdatum_j,
+                'inschrijvingsmaand': db_verblijf.Inschrijvingsdatum_m,
+                'inschrijvingsdag': db_verblijf.Inschrijvingsdatum_d,
                 'leeftijd': db_verblijf.Leeftijd,
                 'lengte': self.convert_length(db_verblijf.Lichaamslengte_m)
             }
         return {
             'geboorteplaats': db_geboorteplaats.Plaatsnaam_vertaling,
             'inschrijvingsjaar': db_verblijf.Inschrijvingsdatum_j,
+            'inschrijvingsmaand': db_verblijf.Inschrijvingsdatum_m,
+            'inschrijvingsdag': db_verblijf.Inschrijvingsdatum_d,
             'leeftijd': db_verblijf.Leeftijd,
             'lengte': self.convert_length(db_verblijf.Lichaamslengte_m)
         }

@@ -49,3 +49,11 @@ if param == 'GET_BELOW_21':
         csvwriter.writerow(r)
     fh.close()
 
+if param == 'GET_BELOW_21_COUPLE':
+    r_21 = rg.get_coupled_data_below_21()
+    coupled_catalog = GenericOut().make_coupled_catalog(r_21)
+    fh = open('output/recidivisten_onder_21_coupled.csv', 'w')
+    csvwriter = csv.writer(fh, delimiter=',', quotechar='"')
+    for r in coupled_catalog:
+        csvwriter.writerow(r)
+    fh.close()

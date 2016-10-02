@@ -109,9 +109,65 @@ class GenericOut:
         for data_item in data_list:
             # 1 + (age - min_age) = position in row
             #item0 = id_gedetineerde
-            row = [0]*((max_age + 1 - min_age) + 1)
+            row = [[]]*((max_age + 1 - min_age) + 1)
             row[0] = data_item[0]['id_ged']
             for data_point in data_item:
-                row[1 + (data_point['leeftijd'] - min_age)] = '{0}:{1}'.format(data_point['leeftijd'], data_point['lengte'])
+                orig = row[1 + (data_point['leeftijd'] - min_age)]
+                new_point = data_point['inschrijving'], data_point['leeftijd'], data_point['lengte']
+                if len(orig) == 0:
+                    row[1 + (data_point['leeftijd'] - min_age)] = [new_point]
+                else:
+                    row[1 + (data_point['leeftijd'] - min_age)].append(new_point)
+            string_row = []
+            # Loop over the row
+            for r in row[1:]:
+                if len(r) == 0:
+                    string_item = 0
+                elif len(r) == 1:
+                    # We have one data point
+                    item = r[0]
+                    string_item = '{0}:{1}'.format(item[1], item[2])
+                else:
+                    # Sort based on ''.join(inschrijving)
+                    sortable = []
+                    for item in r:
+                        sortable_item = [self.mk_sortable_date(item[0]), '{0}:{1}'.format(item[1], item[2])]
+                        sortable.append(sortable_item)
+                    sorted_items = sorted(sortable, key=lambda s_item: s_item[0])
+                    string_item = ','.join([s[1] for s in sorted_items])
+                string_row.append(string_item)
+            if self.non_zero(string_row) >= 1:
+                rows.append(string_row)
+        return rows
+
+    def make_coupled_catalog(self, data_list):
+        rows = []
+        for data_item in data_list:
+            row = [data_item[0][0]['id_ged']]
+            for data_couple in data_item:
+                row.append('{0}:{1}|{2}:{3}'.format(
+                    data_couple[0]['leeftijd'],
+                    data_couple[0]['lengte'],
+                    data_couple[1]['leeftijd'],
+                    data_couple[1]['lengte']
+                ))
             rows.append(row)
         return rows
+
+    def non_zero(self, row):
+        count = 0
+        for i in row:
+            if i != 0:
+                count += 1
+        return count
+
+    def mk_sortable_date(self, inschrijvingsdatum):
+        j = inschrijvingsdatum[0]
+        m = inschrijvingsdatum[1]
+        d = inschrijvingsdatum[2]
+        if len(str(m)) < 2:
+            m = '0{0}'.format(m)
+        if len(str(d)) < 2:
+            d = '0{0}'.format(d)
+        as_str = ''.join([str(j), str(m), str(d)])
+        return int(as_str)

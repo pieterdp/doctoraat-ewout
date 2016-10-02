@@ -78,3 +78,15 @@ class PrisonersCompare(db.Model):
         master_c_naam = non_alpha.sub('', master_c_naam)
         # Compute ratio
         self.l_score = Levenshtein.ratio(master_naam, master_c_naam)
+
+
+class UnmatchedBrugge(db.Model):
+    __tablename__ = 'UnmatchedBrugge'
+    id = db.Column(db.Integer, primary_key=True)
+    id_gedetineerde = db.Column(db.Integer, index=True)
+
+
+class UnmatchedGent(db.Model):
+    __tablename__ = 'UnmatchedGent'
+    id = db.Column(db.Integer, primary_key=True)
+    id_gedetineerde = db.Column(db.Integer, index=True)

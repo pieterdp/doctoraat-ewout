@@ -49,6 +49,7 @@ class RecidiveOut:
                 recidivist['master_id'],
                 recidivist['master_inschrijvingsjaar'],
                 recidivist['master_leeftijd'],
+                recidivist['master_geslacht'],
                 recidivist['master_lengte']
             ]
             i = 0
@@ -62,6 +63,7 @@ class RecidiveOut:
                     slave['slave_id'],
                     slave['slave_inschrijvingsjaar'],
                     slave['slave_leeftijd'],
+                    slave['slave_geslacht'],
                     slave['slave_lengte']
                 ]
             rows.append(row)
@@ -82,6 +84,7 @@ class RecidiveOut:
             'gedetineerde0_id_ged',
             'gedetineerde0_inschrijvingsjaar',
             'gedetineerde0_leeftijd',
+            'gedetineerde0_geslacht',
             'gedetineerde0_lengte'
         ]
         for n in range(1, self.slave_count):
@@ -89,7 +92,26 @@ class RecidiveOut:
                 'gedetineerde{0}_id_ged'.format(str(n)),
                 'gedetineerde{0}_inschrijvingsjaar'.format(str(n)),
                 'gedetineerde{0}_leeftijd'.format(str(n)),
+                'gedetineerde{0}_geslacht'.format(str(n)),
                 'gedetineerde{0}_lengte'.format(str(n))
             ]
         return header
 
+
+class GenericOut:
+    def make_age_catalog(self, data_list, min_age, max_age):
+        header = [
+            'id_gedetineerde'
+        ] + [
+            'lengte_at_{0}'.format(age) for age in range(min_age, max_age + 1, 1)
+        ]
+        rows = [header]
+        for data_item in data_list:
+            # 1 + (age - min_age) = position in row
+            #item0 = id_gedetineerde
+            row = [0]*((max_age + 1 - min_age) + 1)
+            row[0] = data_item[0]['id_ged']
+            for data_point in data_item:
+                row[1 + (data_point['leeftijd'] - min_age)] = '{0}:{1}'.format(data_point['leeftijd'], data_point['lengte'])
+            rows.append(row)
+        return rows

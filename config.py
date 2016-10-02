@@ -7,7 +7,7 @@ DEBUG = False
 ##
 # Database settings
 ##
-DB_HOST = 'serapeum'
+DB_HOST = 'nas.nidavellir.be'
 DB_NAME = 'e_prisoners'
 DB_USER = 's_prisoners'
 DB_PASS = 'Kpg70PHzdbhOmXIkaTxNOSkCO7JFhlyPQ1jXyJITo2YX1QJH9lfjL9l86X1M0DW'

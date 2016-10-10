@@ -118,7 +118,7 @@ class GenericOut:
                     row[1 + (data_point['leeftijd'] - min_age)] = [new_point]
                 else:
                     row[1 + (data_point['leeftijd'] - min_age)].append(new_point)
-            string_row = []
+            string_row = [row[0]]
             # Loop over the row
             for r in row[1:]:
                 if len(r) == 0:

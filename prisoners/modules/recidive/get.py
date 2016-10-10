@@ -127,7 +127,7 @@ class RecidiveGet:
         for row in below_21:
             coupled_row = []
             # Sort the row based on the ''.join(inschrijvingdatum)
-            sorted_row = sorted(row, key=lambda item: self.mk_sortable_date(item['inschrijving']))
+            sorted_row = sorted(row, key=lambda item: (int(item['leeftijd']), self.mk_sortable_date(item['inschrijving'])))
             #if len(sorted_row) >= 2:
             i = 0
             while i < len(sorted_row):

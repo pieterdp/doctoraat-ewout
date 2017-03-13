@@ -3,9 +3,16 @@ from prisoners.modules.recidive.get import RecidiveGet
 from prisoners.modules.recidive.out import RecidiveOut, GenericOut
 from prisoners.modules.all import All
 
-param = 'GET_BELOW_21_COUPLE'
+param = 'GET_ALL'
 
 rg = RecidiveGet()
+
+if param == 'GET_ALL':
+    fh = open('output/alles_en_iedereen.csv', 'w')
+    csvwriter = csv.writer(fh, delimiter=',', quotechar='"')
+    for prisoner in rg.all_prisoners:
+        csvwriter.writerow(prisoner)
+    fh.close()
 
 if param == 'GET_NON_REC':
     header = [
@@ -23,6 +30,64 @@ if param == 'GET_NON_REC':
     csvwriter.writerow(header)
 
     for not_recidivist in rg.not_recidivists:
+        row = [
+            not_recidivist['master_naam'],
+            not_recidivist['master_voornaam'],
+            not_recidivist['master_geboorteplaats'],
+            not_recidivist['master_id'],
+            not_recidivist['master_inschrijvingsjaar'],
+            not_recidivist['master_leeftijd'],
+            not_recidivist['master_geslacht'],
+            not_recidivist['master_lengte']
+        ]
+        csvwriter.writerow(row)
+    fh.close()
+
+if param == 'GET_NON_REC_BRUGGE':
+    header = [
+        'naam',
+        'voornaam',
+        'geboorteplaats',
+        'gedetineerde0_id_ged',
+        'gedetineerde0_inschrijvingsjaar',
+        'gedetineerde0_leeftijd',
+        'gedetineerde0_geslacht',
+        'gedetineerde0_lengte'
+    ]
+    fh = open('output/brugge_geen_recidivisten.csv', 'w')
+    csvwriter = csv.writer(fh, delimiter=',', quotechar='"')
+    csvwriter.writerow(header)
+
+    for not_recidivist in rg.not_recidivists_by_prison['Brugge']:
+        row = [
+            not_recidivist['master_naam'],
+            not_recidivist['master_voornaam'],
+            not_recidivist['master_geboorteplaats'],
+            not_recidivist['master_id'],
+            not_recidivist['master_inschrijvingsjaar'],
+            not_recidivist['master_leeftijd'],
+            not_recidivist['master_geslacht'],
+            not_recidivist['master_lengte']
+        ]
+        csvwriter.writerow(row)
+    fh.close()
+
+if param == 'GET_NON_REC_GENT':
+    header = [
+        'naam',
+        'voornaam',
+        'geboorteplaats',
+        'gedetineerde0_id_ged',
+        'gedetineerde0_inschrijvingsjaar',
+        'gedetineerde0_leeftijd',
+        'gedetineerde0_geslacht',
+        'gedetineerde0_lengte'
+    ]
+    fh = open('output/gent_geen_recidivisten.csv', 'w')
+    csvwriter = csv.writer(fh, delimiter=',', quotechar='"')
+    csvwriter.writerow(header)
+
+    for not_recidivist in rg.not_recidivists_by_prison['Gent']:
         row = [
             not_recidivist['master_naam'],
             not_recidivist['master_voornaam'],

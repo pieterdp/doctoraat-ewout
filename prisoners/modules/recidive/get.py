@@ -2,7 +2,7 @@ import re
 from prisoners.models.brugge import PrisonersMatchBrugge, GedetineerdeBrugge, GeboorteplaatsBrugge, VerblijfBrugge
 from prisoners.models.compare import PrisonersMatch, UnmatchedBrugge, UnmatchedGent
 from prisoners.models.original import Gedetineerde, Geboorteplaats, Verblijf
-from prisoners.modules.cache import RecidivistsCache, NonRecidivistsCache
+from prisoners.modules.cache import RecidivistsCache, NonRecidivistsCache, AllCache, AllWithDataCache
 from prisoners.modules.all import All
 
 INVALIDATE_CACHE = False
@@ -40,18 +40,53 @@ class RecidiveGet:
     def __init__(self):
         self.recidivists = self.__r_cache()
         self.not_recidivists = self.__n_cache()
+        self.all_prisoners = self.__a_cache()
+        # self.recidivists_by_prison = {
+        #    'Brugge': self.__r_b_cache(),
+        #    'Gent': self.__r_g_cache()
+        # }
 
     def __r_cache(self):
         c = RecidivistsCache()
-        if c.get() is None or INVALIDATE_CACHE == True:
+        if c.get() is None or INVALIDATE_CACHE is True:
             c.set(self.get_all_recidivists())
         return c.get()
 
     def __n_cache(self):
         c = NonRecidivistsCache()
-        if c.get() is None or INVALIDATE_CACHE == True:
+        if c.get() is None or INVALIDATE_CACHE is True:
             c.set(self.get_not_recidivists())
+        return c.get()[0] + c.get()[1]
+
+    def __r_b_cache(self):
+        c = RecidivistsCache()
+        if c.get() is None or INVALIDATE_CACHE is True:
+            c.set(self.get_all_recidivists())
         return c.get()
+
+    def __r_g_cache(self):
+        c = RecidivistsCache()
+        if c.get() is None or INVALIDATE_CACHE is True:
+            c.set(self.get_all_recidivists())
+        return c.get()
+
+    def __n_b_cache(self):
+        c = NonRecidivistsCache()
+        if c.get() is None or INVALIDATE_CACHE is True:
+            c.set(self.get_not_recidivists())
+        return c.get()[1]
+
+    def __n_g_cache(self):
+        c = NonRecidivistsCache()
+        if c.get() is None or INVALIDATE_CACHE is True:
+            c.set(self.get_not_recidivists())
+        return c.get()[0]
+
+    def __a_cache(self):
+        a = AllWithDataCache()
+        if a.get() is None or INVALIDATE_CACHE is True:
+            a.set(self.get_all())
+        return a.get()
 
     def get_not_recidivists(self):
         # Get all those unmatched
@@ -65,7 +100,7 @@ class RecidiveGet:
         print('Brugge')
         for unmatched in unmatched_brugge:
             info_brugge.append(self.add_master_information_brugge(unmatched.id_gedetineerde))
-        return info_gent + info_brugge
+        return info_gent, info_brugge
 
     def get_all_recidivists(self):
         # Get all master - slave combinations
@@ -84,6 +119,39 @@ class RecidiveGet:
             recidivist['slaves'] = slaves
             recidivists.append(recidivist)
         return recidivists
+
+    def get_all(self):
+        all_p = []
+        col = ('naam', 'voornaam', 'geboorteplaats', 'gedetineerde0_id_ged', 'gedetineerde0_inschrijvingsjaar',
+               'gedetineerde0_leeftijd', 'gedetineerde0_geslacht', 'gedetineerde0_lengte', 'aantal_veroordelingen')
+        all_p.append(col)
+        # Non-recidivists
+        for person in self.not_recidivists:
+            all_p.append([
+                person['master_naam'],
+                person['master_voornaam'],
+                person['master_geboorteplaats'],
+                person['master_id'],
+                person['master_inschrijvingsjaar'],
+                person['master_leeftijd'],
+                person['master_geslacht'],
+                person['master_lengte'],
+                1
+            ])
+        # Recidivists
+        for person in self.recidivists:
+            all_p.append([
+                person['master_naam'],
+                person['master_voornaam'],
+                person['master_geboorteplaats'],
+                person['master_id'],
+                person['master_inschrijvingsjaar'],
+                person['master_leeftijd'],
+                person['master_geslacht'],
+                person['master_lengte'],
+                len(person['slaves']) + 1
+            ])
+        return all_p
 
     def get_all_recidivists_below_21(self):
         # id_master,
@@ -106,7 +174,8 @@ class RecidiveGet:
                     'id_ged': r['master_id'],
                     'leeftijd': r['master_leeftijd'],
                     'lengte': r['master_lengte'],
-                    'inschrijving': [r['master_inschrijvingsjaar'], r['master_inschrijvingsmaand'], r['master_inschrijvingsdag']]
+                    'inschrijving': [r['master_inschrijvingsjaar'], r['master_inschrijvingsmaand'],
+                                     r['master_inschrijvingsdag']]
                 })
             for s in r['slaves']:
                 if s['slave_leeftijd'] is not None and s['slave_leeftijd'] <= 21:
@@ -127,8 +196,9 @@ class RecidiveGet:
         for row in below_21:
             coupled_row = []
             # Sort the row based on the ''.join(inschrijvingdatum)
-            sorted_row = sorted(row, key=lambda item: (int(item['leeftijd']), self.mk_sortable_date(item['inschrijving'])))
-            #if len(sorted_row) >= 2:
+            sorted_row = sorted(row,
+                                key=lambda item: (int(item['leeftijd']), self.mk_sortable_date(item['inschrijving'])))
+            # if len(sorted_row) >= 2:
             i = 0
             while i < len(sorted_row):
                 try:
@@ -139,7 +209,7 @@ class RecidiveGet:
                         coupled_row = [[sorted_row[i]]]
                     break
                 else:
-                    coupled_row.append([sorted_row[i], sorted_row[i+1]])
+                    coupled_row.append([sorted_row[i], sorted_row[i + 1]])
                 i += 1
             below_coupled.append(coupled_row)
         return below_coupled

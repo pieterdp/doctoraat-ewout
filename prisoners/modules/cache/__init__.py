@@ -27,6 +27,26 @@ class RecidivistsCache(Cache):
         return result
 
 
+class AllWithDataCache(Cache):
+    def __init__(self):
+        try:
+            self.db = self.server['all_with_data']
+        except couchdb.http.ResourceNotFound:
+            self.db = self.server.create('all_with_data')
+
+    def set(self, recidivists):
+        doc = {'data': recidivists, '_id': 'all_with_data'}
+        self.db.save(doc)
+        return doc['data']
+
+    def get(self):
+        try:
+            result = self.db['all_with_data']['data']
+        except couchdb.http.ResourceNotFound:
+            result = None
+        return result
+
+
 class NonRecidivistsCache(Cache):
     def __init__(self):
         try:
@@ -35,13 +55,13 @@ class NonRecidivistsCache(Cache):
             self.db = self.server.create('non_recidivists')
 
     def set(self, recidivists):
-        doc = {'data': recidivists, '_id': 'recidivists_data'}
+        doc = {'data': recidivists, '_id': 'non_recidivists_data'}
         self.db.save(doc)
         return doc['data']
 
     def get(self):
         try:
-            result = self.db['recidivists_data']['data']
+            result = self.db['non_recidivists_data']['data']
         except couchdb.http.ResourceNotFound:
             result = None
         return result
